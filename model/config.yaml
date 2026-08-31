@@ -1,0 +1,26 @@
+# BDD100K AutoResearch Baseline Configuration
+
+project:
+  name: "AutoResearch-BDD100K"
+
+dataset:
+  name: "BDD100K"
+  data_yaml: "data/bdd100k.yaml"
+
+model:
+  name: "yolov8s"
+  pretrained: false
+
+training:
+  image_size: 640
+  batch_size: 8
+  epochs: 300
+  workers: 4
+  seed: 42
+
+evaluation:
+  primary_metric: "map50_95"
+  secondary_metric: "map50"
+
+output:
+  directory: "research/results"
