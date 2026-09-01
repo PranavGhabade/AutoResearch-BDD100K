@@ -9,7 +9,7 @@ dataset:
 
 model:
   name: "yolov8s"
-  pretrained: false
+  pretrained: true
 
 training:
   image_size: 640

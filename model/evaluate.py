@@ -61,7 +61,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--model",
         required=True,
-        help="Path to trained YOLO model weights.",
+        help="Path to the trained YOLO model weights.",
     )
 
     args = parser.parse_args()
