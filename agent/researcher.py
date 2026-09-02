@@ -28,6 +28,18 @@ class AutonomousResearcher:
         self.agent = ResearchAgent(llm=llm)
         self.experiment_manager = ExperimentManager()
 
+    def get_best_metric(self, metric: str = "map50_95") -> float | None:
+        """
+        Return the best metric from previously recorded experiments.
+        """
+
+        best = self.experiment_manager.get_best_result(metric)
+
+        if best is None:
+            return None
+
+        return best["metrics"][metric]
+
     def inspect(self) -> str:
         """
         Inspect the project before proposing an experiment.
@@ -318,7 +330,10 @@ not a patch and not a partial snippet.
 
                 description = (
                     f"{proposal['hypothesis']}\n"
-                    f"Change: {proposal['change']}"
+                    f"Change: {proposal['change']}\n"
+                    f"Previous best mAP@0.5:0.95: {baseline_metric:.4f}\n"
+                    f"New mAP@0.5:0.95: {new_metric:.4f}\n"
+                    f"Decision: {decision}"
                 )
 
                 result_path = (
@@ -362,7 +377,10 @@ not a patch and not a partial snippet.
                     status="reverted",
                     description=(
                         f"{proposal['hypothesis']}\n"
-                        f"Change: {proposal['change']}"
+                        f"Change: {proposal['change']}\n"
+                        f"Previous best mAP@0.5:0.95: {baseline_metric:.4f}\n"
+                        f"New mAP@0.5:0.95: {new_metric:.4f}\n"
+                        f"Decision: {decision}"
                     ),
                 )
             )
