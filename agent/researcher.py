@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 import shutil
 from pathlib import Path
+from unittest import result
 
 from agent.controller import ResearchAgent
 from agent.experiment_manager import ExperimentManager
@@ -362,9 +363,9 @@ not a patch and not a partial snippet.
                     "experiment_id": experiment_id,
                     "decision": decision,
                     "metrics": metrics,
+                    "model_path": "research/runs/baseline/weights/best.pt",
                     "result": str(result_path),
                 }
-
             self.restore_file(
                 file_path,
                 backup_path,
@@ -414,6 +415,43 @@ not a patch and not a partial snippet.
 
             raise
 
+    def run_research_loop(
+        self,
+        baseline_metric: float,
+        model_path: str,
+        max_experiments: int = 3,
+    ) -> list[dict]:
+        """
+        Run multiple autonomous research experiments.
+        """
+
+        results = []
+        best_metric = baseline_metric
+
+        for experiment_number in range(1, max_experiments + 1):
+            print(
+                f"\n===== Autonomous Experiment "
+                f"{experiment_number}/{max_experiments} ====="
+            )
+
+            result = self.run_one_experiment(
+                baseline_metric=best_metric,
+                model_path=model_path,
+            )
+
+            results.append(result)
+
+            if result["decision"] == "KEEP":
+                best_metric = result["metrics"]["map50_95"]
+                model_path = result["model_path"]
+
+            print(
+                f"Current best mAP@0.5:0.95: "
+                f"{best_metric:.4f}"
+            )
+
+        return results
+
 
 def main() -> None:
     """
@@ -454,6 +492,7 @@ def main() -> None:
     print("\n===== Experiment Summary =====")
     print(json.dumps(result, indent=4))
 
+    
 
 if __name__ == "__main__":
     main()
