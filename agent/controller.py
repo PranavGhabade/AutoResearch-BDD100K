@@ -38,6 +38,16 @@ class ResearchAgent:
         response = self.llm.generate(prompt)
 
         try:
+            response = response.strip()
+
+            if response.startswith("```json"):
+                response = response[7:]
+
+            if response.endswith("```"):
+                response = response[:-3]
+
+            response = response.strip()
+
             decision = json.loads(response)
 
         except json.JSONDecodeError as exc:

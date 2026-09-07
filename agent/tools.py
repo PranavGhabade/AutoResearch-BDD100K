@@ -162,10 +162,13 @@ def is_command_allowed(command: str) -> bool:
         "wget",
     }
 
-    normalized_command = command.lower()
+    command_tokens = {
+        part.lower()
+        for part in parts
+    }
 
     for token in blocked_tokens:
-        if token in normalized_command:
+        if token in command_tokens:
             return False
 
     return True
@@ -190,6 +193,8 @@ def run_command(
         shell=True,
         capture_output=True,
         text=True,
+        encoding="utf-8",
+        errors="replace",
         timeout=timeout,
     )
 

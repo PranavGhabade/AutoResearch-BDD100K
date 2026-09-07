@@ -34,12 +34,37 @@ class AutonomousResearcher:
         Return the best metric from previously recorded experiments.
         """
 
-        best = self.experiment_manager.get_best_result(metric)
+        best = self.experiment_manager.get_best_result(
+            metric,
+            allowed_statuses={"baseline", "kept"},
+        )
 
         if best is None:
             return None
 
         return best["metrics"][metric]
+
+    def get_experiment_history(self) -> str:
+        """
+        Return previous experiment history for the researcher.
+        """
+
+        results = self.experiment_manager.load_results()
+
+        if not results:
+            return "No previous experiments."
+
+        history = []
+
+        for result in results:
+            history.append(
+                f"Experiment: {result.get('experiment_id')}\n"
+                f"Status: {result.get('status')}\n"
+                f"Description: {result.get('description')}\n"
+                f"Metrics: {result.get('metrics')}\n"
+            )
+
+        return "\n".join(history)
 
     def inspect(self) -> str:
         """
@@ -49,12 +74,12 @@ class AutonomousResearcher:
         files = self.agent.execute_action(
             {
                 "action": "list_files",
-                "path": "model",
+                "path": "cpu_test/model",
             }
         )
 
-        config = read_file("model/config.yaml")
-        train_code = read_file("model/train.py")
+        config = read_file("cpu_test/model/cpu_test_config.yaml")
+        train_code = read_file("cpu_test/model/train_cpu_test.py")
 
         return (
             "PROJECT FILES:\n"
@@ -73,39 +98,47 @@ class AutonomousResearcher:
         Ask the LLM to propose exactly one experiment.
         """
 
+        experiment_history = self.get_experiment_history()
+
         prompt = f"""
-You are an ML research agent working on an object detection project.
+        You are an ML research agent working on an object detection project.
 
-Your task is to propose EXACTLY ONE small, testable experiment.
+        Your task is to propose EXACTLY ONE small, testable experiment.
 
-Project context:
+        Project context:
 
-{project_context}
+        {project_context}
 
-Rules:
+        Previous experiment history:
 
-1. Propose exactly one experiment.
-2. Modify only files allowed by the project guardrails.
-3. Do not modify evaluation code.
-4. Do not modify dataset annotations or images.
-5. Do not modify agent infrastructure.
-6. The experiment must be related to model training.
-7. The change must be reversible.
-8. Do not propose multiple alternatives.
-9. Return ONLY valid JSON.
+        {experiment_history}
 
-Required JSON format:
+        Rules:
 
-{{
-    "hypothesis": "short explanation",
-    "file": "path/to/file",
-    "change": "specific change to make",
-    "content": "complete replacement content for the file"
-}}
+        1. Propose exactly one experiment.
+        2. Modify only files allowed by the project guardrails.
+        3. Do not modify evaluation code.
+        4. Do not modify dataset annotations or images.
+        5. Do not modify agent infrastructure.
+        6. The experiment must be related to model training.
+        7. The change must be reversible.
+        8. Do not propose multiple alternatives.
+        9. Do not repeat an experiment that has already been tried.
+        10. Use the previous experiment history to choose a new, meaningfully different experiment.
+        11. Return ONLY valid JSON.
 
-The "content" field must contain the COMPLETE contents of the modified file,
-not a patch and not a partial snippet.
-"""
+        Required JSON format:
+
+        {{
+            "hypothesis": "short explanation",
+            "file": "path/to/file",
+            "change": "specific change to make",
+            "content": "complete replacement content for the file"
+        }}
+
+        The "content" field must contain the COMPLETE contents of the modified file,
+        not a patch and not a partial snippet.
+        """
 
         decision = self.agent._ask_llm(prompt)
 
@@ -194,16 +227,42 @@ not a patch and not a partial snippet.
         """
 
         return run_command(
-            "python model/train.py"
+            "python cpu_test/model/train_cpu_test.py",
+            timeout=3600,
+        )
+
+    def get_latest_model_path(self) -> str:
+        """
+        Return the most recently created CPU test model.
+        """
+
+        model_files = list(
+            (
+                PROJECT_ROOT / "cpu_test" / "research" / "cpu_test_runs"
+            ).glob("yolov8n_cpu_test*/weights/best.pt")
+        )
+
+        if not model_files:
+            raise FileNotFoundError(
+                "No CPU test model found."
+            )
+
+        latest_model = max(
+            model_files,
+            key=lambda path: path.stat().st_mtime,
+        )
+
+        return str(
+            latest_model.relative_to(PROJECT_ROOT)
         )
 
     def evaluate(self, model_path: str) -> dict:
         """
         Evaluate the produced model.
-        """
+        """ 
 
         output = run_command(
-            f'python model/evaluate.py --model "{model_path}"'
+            f'python cpu_test/model/evaluate_cpu_test.py --model "{model_path}"'
         )
 
         metrics = self._parse_metrics(output)
@@ -313,6 +372,12 @@ not a patch and not a partial snippet.
             training_output = self.run_training()
 
             print(training_output)
+
+            model_path = self.get_latest_model_path()
+
+            print(
+                f"New experiment model: {model_path}"
+            )
 
             print("[7/7] Evaluating experiment...")
 

@@ -1,0 +1,10 @@
+{
+    "experiment_id": "experiment_20260904_154251",
+    "timestamp": "2026-09-04T16:36:52.995951",
+    "status": "reverted",
+    "description": "Switching the optimizer from the default (SGD/Auto) to Adam will accelerate convergence and improve the validation metrics (mAP50 and mAP50-95) within the limited budget of 10 epochs.\nChange: Explicitly set the training optimizer to 'Adam' in the model.train() call.\nPrevious best mAP@0.5:0.95: 0.1473\nNew mAP@0.5:0.95: 0.1011\nDecision: REVERT",
+    "metrics": {
+        "map50": 0.1904,
+        "map50_95": 0.1011
+    }
+}

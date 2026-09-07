@@ -68,11 +68,15 @@ class ExperimentManager:
 
         return results
 
-    def get_best_result(self, metric: str) -> dict | None:
+    def get_best_result(
+        self,
+        metric: str,
+        allowed_statuses: set[str] | None = None,
+    ) -> dict | None:
         """
         Return the experiment with the highest value
         for the specified metric.
-        """
+        """ 
 
         results = self.load_results()
 
@@ -80,6 +84,10 @@ class ExperimentManager:
             result
             for result in results
             if metric in result.get("metrics", {})
+            and (
+                allowed_statuses is None
+                or result.get("status") in allowed_statuses
+            )
         ]
 
         if not valid_results:

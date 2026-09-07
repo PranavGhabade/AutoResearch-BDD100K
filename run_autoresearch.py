@@ -13,7 +13,7 @@ def main() -> None:
 
     results = researcher.run_research_loop(
         baseline_metric=best_metric,
-        model_path="research/runs/baseline/weights/best.pt",
+        model_path="cpu_test/research/cpu_test_runs/yolov8n_cpu_test/weights/best.pt",
         max_experiments=3,
     )
 

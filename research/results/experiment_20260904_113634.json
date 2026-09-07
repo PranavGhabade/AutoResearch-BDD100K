@@ -1,0 +1,10 @@
+{
+    "experiment_id": "experiment_20260904_113634",
+    "timestamp": "2026-09-04T12:06:44.671120",
+    "status": "reverted",
+    "description": "Reducing the training image size from 640 to 512 will speed up the training process on CPU while retaining comparable model performance.\nChange: Change training.image_size from 640 to 512\nPrevious best mAP@0.5:0.95: 0.1473\nNew mAP@0.5:0.95: 0.1288\nDecision: REVERT",
+    "metrics": {
+        "map50": 0.2184,
+        "map50_95": 0.1288
+    }
+}

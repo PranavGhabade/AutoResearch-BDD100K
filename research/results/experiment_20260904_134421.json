@@ -1,0 +1,10 @@
+{
+    "experiment_id": "experiment_20260904_134421",
+    "timestamp": "2026-09-04T14:37:21.456983",
+    "status": "reverted",
+    "description": "Switching the training optimizer from the default to AdamW will accelerate convergence and improve the mAP metrics within the limited 10 epochs on the CPU test dataset.\nChange: Add optimizer='adamw' to the model.train() call.\nPrevious best mAP@0.5:0.95: 0.1473\nNew mAP@0.5:0.95: 0.1473\nDecision: REVERT",
+    "metrics": {
+        "map50": 0.2479,
+        "map50_95": 0.1473
+    }
+}

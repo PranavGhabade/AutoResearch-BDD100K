@@ -8,6 +8,8 @@ PROJECT_ROOT = Path(__file__).resolve().parent.parent
 ALLOWED_WRITE_DIRECTORIES = {
     "model",
     "research/experiments",
+    "cpu_test/model",
+    "cpu_test/research/experiments",
 }
 
 

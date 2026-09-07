@@ -1,0 +1,10 @@
+{
+    "experiment_id": "experiment_20260904_165033",
+    "timestamp": "2026-09-04T17:42:48.943211",
+    "status": "reverted",
+    "description": "Reducing the number of warmup epochs from 3.0 to 1.0 will speed up optimization. Since we are fine-tuning pretrained weights (which are already in a stable local minimum), a long warmup period of 3 epochs (30% of the entire 10-epoch training) restricts the model from learning at the optimal learning rate for most of the training run. Shortening the warmup to 1.0 epoch will give the model more epochs to converge at the main learning rate.\nChange: Add warmup_epochs=1.0 to the model.train() call inside train_cpu_test.py.\nPrevious best mAP@0.5:0.95: 0.1473\nNew mAP@0.5:0.95: 0.1237\nDecision: REVERT",
+    "metrics": {
+        "map50": 0.2153,
+        "map50_95": 0.1237
+    }
+}

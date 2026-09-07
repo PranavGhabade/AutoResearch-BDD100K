@@ -1,0 +1,10 @@
+{
+    "experiment_id": "cpu_baseline_001",
+    "timestamp": "2026-09-04T13:42:44.536408",
+    "status": "baseline",
+    "description": "Initial YOLOv8n CPU baseline on 700 BDD100K training images and 150 validation images.",
+    "metrics": {
+        "map50": 0.2479,
+        "map50_95": 0.1473
+    }
+}

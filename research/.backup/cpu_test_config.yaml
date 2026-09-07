@@ -1,0 +1,24 @@
+project:
+  name: "AutoResearch-BDD100K-CPU-Test"
+
+dataset:
+  name: "BDD100K-CPU-Test"
+  data_yaml: "data/bdd100k_cpu.yaml"
+
+model:
+  name: "yolov8n"
+  pretrained: true
+
+training:
+  image_size: 640
+  batch_size: 4
+  epochs: 10
+  workers: 2
+  seed: 42
+
+evaluation:
+  primary_metric: "map50_95"
+  secondary_metric: "map50"
+
+output:
+  directory: "research/cpu_test_runs"

@@ -1,0 +1,10 @@
+{
+    "experiment_id": "experiment_20260904_152758",
+    "timestamp": "2026-09-04T15:42:38.251513",
+    "status": "reverted",
+    "description": "Reducing the image size from 640 to 320 will significantly speed up training on the CPU while maintaining a reasonable level of detection accuracy (mAP).\nChange: Decrease training image_size from 640 to 320.\nPrevious best mAP@0.5:0.95: 0.1473\nNew mAP@0.5:0.95: 0.0678\nDecision: REVERT",
+    "metrics": {
+        "map50": 0.1196,
+        "map50_95": 0.0678
+    }
+}
